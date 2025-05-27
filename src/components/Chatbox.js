@@ -11,37 +11,72 @@ const Chatbox = () => {
     setIsOpen(!isOpen);
   };
 
+  // const handleSend = async () => {
+  //   if (input.trim() === "") return;
+
+  //   // Add the user's message to the chat
+  //   setMessages((prev) => [...prev, { text: input, sender: "user" }]);
+  //   setInput(""); // Clear the input field
+  //   setIsLoading(true); // Set loading state
+
+  //   try {
+  //     const response = await fetch("http://localhost:5000/api/chat", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ message: input }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     // Add the bot's reply to the chat
+  //     setMessages((prev) => [...prev, { text: data.reply, sender: "bot" }]);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     // Handle errors gracefully
+  //     setMessages((prev) => [
+  //       ...prev,
+  //       { text: "Terjadi kesalahan saat memproses pesan.", sender: "bot" },
+  //     ]);
+  //   } finally {
+  //     setIsLoading(false); // Reset loading state
+  //   }
+  // };
+
   const handleSend = async () => {
     if (input.trim() === "") return;
 
-    // Add the user's message to the chat
+    // Add user message
     setMessages((prev) => [...prev, { text: input, sender: "user" }]);
-    setInput(""); // Clear the input field
-    setIsLoading(true); // Set loading state
+    setInput("");
+    setIsLoading(true);
 
     try {
-      // Send the message to the backend API
-      const response = await fetch("/api/chat", {
+      const response = await fetch("http://localhost:8080/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: input }), // Menggunakan 'message' sebagai key
       });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
       const data = await response.json();
 
-      // Add the bot's reply to the chat
+      // Menggunakan data.reply sebagai respons
       setMessages((prev) => [...prev, { text: data.reply, sender: "bot" }]);
     } catch (error) {
       console.error("Error:", error);
-      // Handle errors gracefully
       setMessages((prev) => [
         ...prev,
-        { text: "Terjadi kesalahan saat memproses pesan.", sender: "bot" },
+        { text: "Maaf, terjadi kesalahan. Silakan coba lagi.", sender: "bot" },
       ]);
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 
